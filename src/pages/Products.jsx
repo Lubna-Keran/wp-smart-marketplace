@@ -1,30 +1,44 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useNavigation } from 'react-router'
 import { getAllProducts } from '../Api';
-const Products = () => {
+import { myStoreHook } from '../MyStoreContext';
+import { useQuery } from "@tanstack/react-query";
+const Products = ({ onAddToCart, setPageLoading }) => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-    useEffect ( () => {
-      const fetchProducts = async()=> {
-        const data = await getAllProducts();
-        setProducts(data);
-        console.log(data);
-     } 
-     fetchProducts();   
-  } , [])
+  const { renderProductPrice} = myStoreHook()
+  //const [products, setProducts] = useState([]);
 
-  const renderProductPrice = (product) => {
-     if(product.sale_price){
-      return <>
-        <span className="text-muted text-decoration-line-through"> ${ product.regular_price } </span>
-        <span className='text-danger'> ${ product.sale_price } </span>
-      </>
-     }
-     
-     return <>
-      ${product.regular_price || product.price}
-     </>
-  }
+
+  const {
+  data: products = [],
+  isPending,
+  isError,
+  isFetching
+} = useQuery({
+  queryKey: ["products"],
+  queryFn: getAllProducts,
+});
+  
+
+if(isPending){
+ setPageLoading(true);
+}else{
+setPageLoading(false)
+}
+    
+// useEffect ( () => {
+//       const fetchProducts = async()=> {
+        
+       
+//         const data = await getAllProducts();
+//         //setProducts(data);
+//         console.log(data);
+        
+//      } 
+//      fetchProducts();   
+//   } , [])
+
+ 
   return (
     <>
      <div className="container">
@@ -48,7 +62,7 @@ const Products = () => {
               __html: singleProduct?.description
             }}></p>
             <p className="card-text">Category: { singleProduct?.categories.map( (category) => category.name ).join(",") } </p>
-            <button className="btn btn-primary">
+             <button className="btn btn-primary" onClick={ () => onAddToCart(singleProduct) }>
               Add to Cart
             </button>
           </div>

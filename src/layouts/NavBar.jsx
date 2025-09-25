@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 
-const NavBar = () => {
+const NavBar = ( { setLogout, cartItems, isAuthenticated }) => {
+
+  
   return (
    <>
    <nav className="navbar navbar-expand-lg navbar-light">
@@ -21,23 +23,36 @@ const NavBar = () => {
         <li className="nav-item">
            <Link  className="nav-link" to ="/cart">
             Cart
-            <span className="badge pill bg-secondary">0</span> 
+            {
+              isAuthenticated ? (<span className="badge pill bg-secondary">{ cartItems.length }</span> ) : (
+                <span className="badge pill bg-secondary">0</span> 
+              )
+              
+            }
+            
           </Link>
         </li>
-        
-        <li className="nav-item">
-          <Link  className="nav-link" to ="/my-account">My Account</Link>
-        </li>
-        <li className="nav-item">
-           <Link  className="nav-link" to ="/my-orders">My Orders</Link>
-        </li>
-        <li className="nav-item">
-           <Link  className="nav-link" to ="/" onclick="handleLogout()">Logout</Link>
-        </li>
-      
-        <li className="nav-item">
-          <Link  className="nav-link" to ="/login">Login/Signup</Link>
-        </li>
+
+        {
+          isAuthenticated ? (
+              <>
+              <li className="nav-item">
+                <Link  className="nav-link" to ="/my-account">My Account</Link>
+              </li>
+              <li className="nav-item">
+                <Link  className="nav-link" to ="/my-orders">My Orders</Link>
+              </li>
+              <li className="nav-item">
+                <Link  className="nav-link" to ="/" onClick={ setLogout }>Logout</Link>
+              </li>
+              </>
+          ) : (
+               <li className="nav-item">
+                 <Link  className="nav-link" to ="/login">Login/Signup</Link>
+                </li>
+              )
+           }
+
       </ul>
     </div>
 

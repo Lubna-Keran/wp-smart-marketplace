@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
+import { registerStoreUser } from '../Api';
+import { useNavigate } from "react-router-dom"
+import { loginUser , getLoggedInUserData } from '../Api';
+import { toast } from 'react-toastify';
+const Auth = ({ setPageLoading, isAuthenticated, setUserData }) => {
 
-const Auth = () => {
-
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     login_username: "",
     login_password: ""
@@ -33,24 +37,82 @@ const Auth = () => {
          }))
   }
 
-  const handleLoginSubmit = (event) => {
+  const handleLoginSubmit = async(event) => {
     event.preventDefault();
+    setPageLoading(true)
+    try {
+
+     const response = await loginUser({
+        username: loginData.login_username,
+        password: loginData.login_password
+      })
+
+      setLoginData({
+      login_username: "",
+      password: ""
+    })
+
+      console.log(response);
+
+      localStorage.setItem("auth_token", response.token)
+      isAuthenticated(true)
+      toast.success("User Loggedin Successfully");
+
+      // get user data
+      
+        const loggedInUserData = {}
+        const userData = await getLoggedInUserData(response.token)
+        console.log(userData)
+
+        loggedInUserData.id = userData.id
+        loggedInUserData.name = userData.name
+        loggedInUserData.email = response.user_email
+        loggedInUserData.username = response.user_nicename
+
+        localStorage.setItem("user_data", JSON.stringify(loggedInUserData))
+
+        setUserData(JSON.stringify(loggedInUserData))
+
+      navigate('/products');
+      
+      
+    } catch (error) {
+      console.log(error)
+      toast.error("Invalid login details")
+    }finally{
+       setPageLoading(false);
+    }
     console.log(loginData);
-    setLoginData({
-    login_username: "",
-    password: ""
-  })
+    
   }
 
-  const handleSignupSubmit  = (event) => {
+  const handleSignupSubmit  = async (event) => {
      event.preventDefault();
-     console.log(signupData);
-     setSignupData({
+     setPageLoading(true);
+
+     try {
+
+      await registerStoreUser({
+        name : signupData.signup_name,
+        username: signupData.signup_username,
+        email: signupData.signup_email,
+        password: signupData.signup_password
+      })
+      setSignupData({
       signup_name: "",
       signup_email: "",
       signup_username: "",
       signup_password: ""
    })
+   setPageLoading(false)
+   toast.success("User Added in the System!")
+      
+     } catch (error) {
+      console.log(error)
+      
+     }
+     console.log(signupData);
+     
   }
 
   return (

@@ -1,41 +1,81 @@
 import React, { useState } from 'react'
+import { createAnOrder } from '../Api';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
+const Checkout = ({ clearCartItems, isUserData }) => {
 
-const Checkout = () => {
+  const navigate = useNavigate();
+   const userData = JSON.parse(isUserData) || {}
   const [checkoutData, setCheckoutData] = useState({
-    firstName: "",
-    lastName: "",
-    address:"",
-    city:"",
-    email:"",
-    phone: "",
-    state: "",
-    country: "",
-    postcode: ""
+        customer_id: userData.id || "",
+        payment_method: "cod",
+        payment_method_title: "Cash on Delivery",
+        set_pain: false,
+        billing:{
+          first_name: "",
+          last_name: "",
+          address_1:"",
+          city:"",
+          email: userData.email || "",
+          phone: "",
+          state: "",
+          country: "",
+          postcode: ""
+        }
+
+    
   });
 
   const handleOnChange = (event) => {
-    const {name, value} = event.target.value;
-    setCheckoutData( (prevFormData)=> ({
-      ...prevFormData,
-      [name]: value 
-    }))
+     const { name, value } = event.target 
+
+       setCheckoutData( (prevFormData) => ({
+        ...prevFormData,
+        billing: {
+          ...prevFormData.billing,
+          [name]: value
+        }
+       }) )
    }
 
     const handleCheckout = (event) => {
       event.preventDefault();
 
-      console.log(checkoutData);
+      try {
+
+        createAnOrder(checkoutData).then( () => {
+          toast.success("Order Placed Successfully")
+          clearCartItems()
+          navigate("/products")
+        })
+       
+        
+
+        
+      } catch (error) {
+        
+      }finally{
+
+      }
+       console.log(checkoutData);
       setCheckoutData({
-    firstName: "",
-    lastName: "",
-    address:"",
-    city:"",
-    email:"",
-    phone: "",
-    state: "",
-    country: "",
-    postcode: ""
-  })
+        payment_method: "cod",
+        payment_method_title: "Cash on Delivery",
+        set_pain: false,
+        billing:{
+          first_name: "",
+          last_name: "",
+          address_1:"",
+          city:"",
+          email:"",
+          phone: "",
+          state: "",
+          country: "",
+          postcode: ""
+        }
+      })
+
+     
 
     }
     
@@ -50,9 +90,9 @@ const Checkout = () => {
           <input
             type="text"
             className="form-control"
-            name="firstname"
+            name="first_name"
             onChange={handleOnChange}
-            value={checkoutData.firstName}
+            value={checkoutData.billing.first_name}
           />
         </div>
         <div className="col-12 col-md-6">
@@ -60,9 +100,9 @@ const Checkout = () => {
           <input
             type="text"
             className="form-control"
-            name="lastname"
+            name="last_name"
              onChange={handleOnChange}
-             value={checkoutData.lastName}
+             value={checkoutData.billing.last_name}
           />
         </div>
       </div>
@@ -72,9 +112,9 @@ const Checkout = () => {
           <input
             type="text"
             className="form-control"
-            name="address"
+            name="address_1"
              onChange={handleOnChange}
-             value={checkoutData.address}
+             value={checkoutData.billing.address_1}
           />
         </div>
         <div className="col-12 col-md-6">
@@ -84,7 +124,7 @@ const Checkout = () => {
             className="form-control"
             name="city"
              onChange={handleOnChange}
-             value={checkoutData.city}
+             value={checkoutData.billing.city}
           />
         </div>
       </div>
@@ -96,7 +136,7 @@ const Checkout = () => {
             className="form-control"
             name="state"
              onChange={handleOnChange}
-             value={checkoutData.state}
+             value={checkoutData.billing.state}
           />
         </div>
         <div className="col-12 col-md-6">
@@ -106,7 +146,7 @@ const Checkout = () => {
             className="form-control"
             name="postcode"
              onChange={handleOnChange}
-             value={checkoutData.postcode}
+             value={checkoutData.billing.postcode}
           />
         </div>
       </div>
@@ -118,7 +158,7 @@ const Checkout = () => {
             className="form-control"
             name="country"
              onChange={handleOnChange}
-             value={checkoutData.country}
+             value={checkoutData.billing.country}
           />
         </div>
         <div className="col-12 col-md-6">
@@ -128,7 +168,7 @@ const Checkout = () => {
             className="form-control"
             name="email"
              onChange={handleOnChange}
-             value={checkoutData.email}
+             value={checkoutData.billing.email}
           />
         </div>
       </div>
@@ -140,7 +180,7 @@ const Checkout = () => {
             className="form-control"
             name="phone"
              onChange={handleOnChange}
-             value={checkoutData.phone}
+             value={checkoutData.billing.phone}
           />
         </div>
       </div>

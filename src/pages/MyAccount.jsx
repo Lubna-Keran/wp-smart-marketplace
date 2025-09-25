@@ -1,6 +1,8 @@
 import React from 'react'
 
-const MyAccount = () => {
+const MyAccount = ( {isUserData } ) => {
+
+  const usersData = JSON.parse(isUserData)
   return (
     <>
        <div className="container">
@@ -14,7 +16,7 @@ const MyAccount = () => {
               type="text"
               id="formName"
               className="form-control"
-              value="John Doe"  
+              value= {usersData.name} 
               readonly
             />
           </div>
@@ -27,7 +29,7 @@ const MyAccount = () => {
               type="email"
               id="formEmail"
               className="form-control"
-              value="johndoe@example.com" 
+              value= {usersData.email}
               readOnly
             />
           </div>
@@ -40,7 +42,7 @@ const MyAccount = () => {
               type="text"
               id="formUsername"
               className="form-control"
-              value="johndoe"  
+              value= {usersData.username} 
               readOnly
             />
           </div>
